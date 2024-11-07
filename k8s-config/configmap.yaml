@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: representative-config
+  namespace: default
+data:
+  was-synced: "true"
