@@ -38,6 +38,7 @@ resource "google_gke_hub_feature" "fleet_config_defaults" {
   name     = "configmanagement"
   fleet_default_member_config {
     configmanagement {
+      version = "1.19.2"
       config_sync {
         source_format = "unstructured"
         git {

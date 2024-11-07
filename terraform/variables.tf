@@ -44,6 +44,10 @@ variable "attached_platform_version" {
   default     = "1.29.0-gke.3"
 }
 
+variable "admin_groups" {
+  default = "attached-demo-acme-admin@google.com"
+}
+
 
 // eks variables
 

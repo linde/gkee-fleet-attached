@@ -79,7 +79,7 @@ resource "google_container_attached_cluster" "primary" {
   # Optional:
   authorization {
     # admin_users = ["user1@example.com", "user2@example.com"]
-    admin_groups = ["attached-demo-acme-admin@google.com"]
+    admin_groups = [var.admin_groups]
   }
 
   depends_on = [
