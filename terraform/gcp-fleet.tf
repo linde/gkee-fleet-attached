@@ -42,10 +42,10 @@ resource "google_gke_hub_feature" "fleet_config_defaults" {
       config_sync {
         source_format = "unstructured"
         git {
-          sync_repo   = "https://github.com/linde/gkee-fleet-tenacy-examples.git"
+          sync_repo   = "https://github.com/linde/gkee-fleet-attached.git"
           sync_branch = "main"
           secret_type = "none"
-          policy_dir  = "fleet-tenancy-with-defaults/k8s-policy-dir/policy"
+          policy_dir  = "k8s-config/"
         }
       }
     }

@@ -60,8 +60,13 @@ variable "aws_eks_k8s_version" {
 }
 
 variable "aws_eks_instance_types" {
-  default = ["t3.small"]
+  default = ["t3.large"]
 }
+
+variable "aws_eks_node_count" {
+  default = 3
+}
+
 
 variable "name_prefix" {
   default = "attached-eks"
