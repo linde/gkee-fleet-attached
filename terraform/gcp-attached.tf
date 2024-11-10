@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
+
+module "eks" {
+  source       = "./eks"
+  cluster_name = local.cluster_name
+}
+
+
 provider "helm" {
   alias = "bootstrap_installer"
   kubernetes {
-    host                   = aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.eks.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks.token
+    host                   = module.eks.host
+    cluster_ca_certificate = module.eks.cluster_ca_certificate
+    token                  = module.eks.token
   }
 }
 
 module "attached_install_manifest" {
   source = "github.com/GoogleCloudPlatform/anthos-samples/anthos-attached-clusters/modules/attached-install-manifest"
 
-
-  attached_cluster_name          = aws_eks_cluster.eks.name
+  attached_cluster_name          = local.cluster_name
   attached_cluster_fleet_project = var.fleet_project
-  gcp_location                   = var.gcp_location
+  gcp_location                   = var.attached_location
   platform_version               = var.attached_platform_version
   providers = {
     helm = helm.bootstrap_installer
@@ -37,9 +43,7 @@ module "attached_install_manifest" {
   # Ensure the node group and route are destroyed after we uninstall the manifest.
   # `terraform destroy` will fail if the module can't access the cluster to clean up.
   depends_on = [
-    aws_eks_node_group.node,
-    aws_route.public_internet_gateway,
-    aws_route_table_association.public,
+    module.eks
   ]
 }
 
@@ -49,14 +53,14 @@ data "google_project" "fleet_project" {
 
 
 resource "google_container_attached_cluster" "primary" {
-  name             = aws_eks_cluster.eks.name
+  name             = local.cluster_name
   project          = var.fleet_project
-  location         = var.gcp_location
-  description      = "EKS attached cluster example"
-  distribution     = "eks"
+  location         = var.attached_location
+  description      = "attached cluster example"
+  distribution     = module.eks.distribution
   platform_version = var.attached_platform_version
   oidc_config {
-    issuer_url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+    issuer_url = module.eks.oidc_issuer_url
   }
   fleet {
     project = "projects/${data.google_project.fleet_project.number}"
@@ -79,10 +83,21 @@ resource "google_container_attached_cluster" "primary" {
   # Optional:
   authorization {
     # admin_users = ["user1@example.com", "user2@example.com"]
-    admin_groups = [var.admin_groups]
+    admin_groups = var.cluster_admin_groups
   }
 
   depends_on = [
     module.attached_install_manifest
   ]
+}
+
+resource "google_gke_hub_membership_binding" "team_scope_cluster_bindings" {
+  project               = var.fleet_project
+  membership_binding_id = google_container_attached_cluster.primary.name
+  scope                 = google_gke_hub_scope.acme_scope.name
+ # the attaached name we provided is used as the membership name
+  membership_id         = local.cluster_name  
+  # even though the attached resource is in a region, the membership is
+  # in the global region for all attached resources at this time.
+  location              = "global" 
 }

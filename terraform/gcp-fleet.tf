@@ -52,19 +52,40 @@ resource "google_gke_hub_feature" "fleet_config_defaults" {
   }
 }
 
+// Team One stuff
+
+// TODO rename acme_scope to team_one_scope
 resource "google_gke_hub_scope" "acme_scope" {
   project  = var.fleet_project
-  scope_id = var.team_id
+  scope_id = var.acme_scope_id
 }
 
-
+// TODO rename acme_scope_namespaces to team_one_scope_namespaces
 resource "google_gke_hub_namespace" "acme_scope_namespaces" {
-  for_each = toset(var.namespace_names)
+  for_each = toset(var.acme_scope_namespace_names)
 
   project            = var.fleet_project
   scope_namespace_id = each.key
   scope_id           = google_gke_hub_scope.acme_scope.scope_id
   scope              = google_gke_hub_scope.acme_scope.id
+}
+
+module "acme_scope_admin_permissions" {
+  source = "terraform-google-modules/kubernetes-engine/google//modules/fleet-app-operator-permissions"
+
+  fleet_project_id = var.fleet_project
+  scope_id         = google_gke_hub_scope.acme_scope.scope_id
+  groups           = var.cluster_admin_groups
+  role             = "ADMIN"
+}
+
+module "acme_scope_viewer_permissions" {
+  source = "terraform-google-modules/kubernetes-engine/google//modules/fleet-app-operator-permissions"
+
+  fleet_project_id = var.fleet_project
+  scope_id         = google_gke_hub_scope.acme_scope.scope_id
+  users            = var.acme_scope_viewers
+  role             = "VIEW"
 }
 
 

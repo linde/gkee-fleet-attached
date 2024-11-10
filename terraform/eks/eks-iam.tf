@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "eks" {
-  name               = "${local.cluster_name}-eks-role"
+  name               = "${var.cluster_name}-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -40,7 +40,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
 }
 
 resource "aws_iam_role" "node" {
-  name = "${var.name_prefix}-node-group-role"
+  name = "${var.cluster_name}-group-role"
 
   assume_role_policy = jsonencode({
     Statement = [{

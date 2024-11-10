@@ -20,19 +20,24 @@ variable "fleet_project" {
   default = "stevenlinde-eks-2024-11-01"
 }
 
-variable "team_id" {
+variable "acme_scope_id" {
   default = "acme"
 }
 
-variable "namespace_names" {
+variable "acme_scope_namespace_names" {
   default = ["acme-anvils", "acme-explosives"]
 }
+
+variable "acme_scope_viewers" {
+  default = ["juliangut@google.com"]
+}
+
 
 variable "disable_services_on_destroy" {
   default = false
 }
 
-variable "gcp_location" {
+variable "attached_location" {
   description = "GCP location to create the attached resource in"
   type        = string
   default     = "us-west1"
@@ -44,57 +49,12 @@ variable "attached_platform_version" {
   default     = "1.29.0-gke.3"
 }
 
-variable "admin_groups" {
-  default = "attached-demo-acme-admin@google.com"
+variable "cluster_admin_groups" {
+  default = ["attached-demo-acme-admin@google.com"]
 }
-
-
-// eks variables
-
-variable "aws_region" {
-  default = "us-west-1"
-}
-
-variable "aws_eks_k8s_version" {
-  default = "1.29"
-}
-
-variable "aws_eks_instance_types" {
-  default = ["t3.large"]
-}
-
-variable "aws_eks_node_count" {
-  default = 3
-}
-
 
 variable "name_prefix" {
   default = "attached-eks"
-}
-
-
-// vpc vars
-
-variable "vpc_cidr_block" {
-  description = "CIDR block to use for the VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "tags" {
-  description = "List of tags to apply to resources"
-  type        = map(string)
-  default     = {}
-}
-
-variable "public_subnet_cidr_blocks" {
-  description = "CIDR blocks to use for public subnets"
-  type        = list(string)
-  default = [
-    "10.0.101.0/24",
-    "10.0.102.0/24",
-    "10.0.103.0/24"
-  ]
 }
 
 

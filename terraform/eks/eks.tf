@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 resource "aws_eks_cluster" "eks" {
-  name     = local.cluster_name
+  name     = var.cluster_name
   role_arn = aws_iam_role.eks.arn
 
   vpc_config {
@@ -41,7 +41,7 @@ data "aws_eks_cluster_auth" "eks" {
 
 resource "aws_eks_node_group" "node" {
   cluster_name    = aws_eks_cluster.eks.name
-  node_group_name = "${local.cluster_name}-ng"
+  node_group_name = "${aws_eks_cluster.eks.name}-ng"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = aws_subnet.public[*].id
 

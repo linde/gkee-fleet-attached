@@ -33,7 +33,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = true
 
   tags = merge(var.tags, {
-    Name = "${var.name_prefix}-vpc"
+    Name = "${var.cluster_name}-vpc"
   })
 }
 
@@ -45,8 +45,8 @@ resource "aws_subnet" "public" {
   availability_zone       = local.azs[count.index]
   map_public_ip_on_launch = true
   tags = merge(var.tags, {
-    Name                                          = "${var.name_prefix}-subnet-public-${local.azs[count.index]}",
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    Name                                        = "${var.cluster_name}-pub-${local.azs[count.index]}",
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   })
 
   depends_on = [aws_internet_gateway.gw]
@@ -56,7 +56,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.vpc.id
 
   tags = merge(var.tags, {
-    Name = "${var.name_prefix}-vpc"
+    Name = "${var.cluster_name}-vpc"
   })
 }
 
@@ -64,7 +64,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.vpc.id
 
   tags = merge(var.tags, {
-    Name = "${var.name_prefix}-vpc-public"
+    Name = "${var.cluster_name}-vpc-public"
   })
 }
 
