@@ -31,7 +31,7 @@ Additionally, you can use SSO and interact directly via k8s, even without line o
 # explore via GCP
 
 TFSTATE_PROJECT=$(echo var.fleet_project | terraform console | sed 's/"//g')
-TFSTATE_CLUSTER=$(echo google_container_attached_cluster.primary.name | terraform console | sed 's/"//g')
+TFSTATE_CLUSTER=$(echo module.target_cluster_eks.cluster_name | terraform console | sed 's/"//g')
 
 gcloud container fleet memberships get-credentials --project=${TFSTATE_PROJECT} ${TFSTATE_CLUSTER}
 
@@ -42,4 +42,5 @@ Also, we created GKE Enterprise teams for our "Acme" line of business. For this,
 * Check out the [acme team](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/details?pageState=(%22timeRangeFilter%22:(%22groupValue%22:%22PT1H%22,%22customValue%22:null))&project=stevenlinde-eks-2024-11-01)
 * See the [Fleet Namespaces](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/namespaces?pageState=(%22timeRangeFilter%22:(%22groupValue%22:%22PT1H%22,%22customValue%22:null))&project=stevenlinde-eks-2024-11-01)
 * Check out the specific [anvils app namespaces](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/namespaces/acme-anvils/details?project=stevenlinde-eks-2024-11-01) and [logs](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/namespaces/acme-anvils/logs?project=stevenlinde-eks-2024-11-01)
+
 
