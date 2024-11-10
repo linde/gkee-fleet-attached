@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+
+// make the fleet project number available
+data "google_project" "fleet_project" {
+  project_id = var.fleet_project
+}
+
+
 resource "google_project_service" "services" {
   project = var.fleet_project
   for_each = toset([

@@ -15,52 +15,53 @@
  */
 
 
-module "eks" {
-  source       = "./eks"
-  cluster_name = local.cluster_name
+// a KIND cluster example
+
+module "target_cluster_kind" {
+  source       = "./kind"
+  cluster_name = "${local.cluster_name}-kind"
 }
 
-
+# // use this with a kind target_cluster
 provider "helm" {
-  alias = "bootstrap_installer"
+  alias = "kind_bootstrap_installer"
   kubernetes {
-    host                   = module.eks.host
-    cluster_ca_certificate = module.eks.cluster_ca_certificate
-    token                  = module.eks.token
+    host                   = module.target_cluster_kind.endpoint
+    cluster_ca_certificate = module.target_cluster_kind.cluster_ca_certificate
+    client_certificate     = module.target_cluster_kind.client_certificate
+    client_key             = module.target_cluster_kind.client_key
   }
 }
 
-module "attached_install_manifest" {
+
+module "attached_install_manifest_kind" {
   source = "github.com/GoogleCloudPlatform/anthos-samples/anthos-attached-clusters/modules/attached-install-manifest"
 
-  attached_cluster_name          = local.cluster_name
+  attached_cluster_name          = module.target_cluster_kind.cluster_name
   attached_cluster_fleet_project = var.fleet_project
   gcp_location                   = var.attached_location
   platform_version               = var.attached_platform_version
   providers = {
-    helm = helm.bootstrap_installer
+    helm = helm.kind_bootstrap_installer
   }
   # Ensure the node group and route are destroyed after we uninstall the manifest.
   # `terraform destroy` will fail if the module can't access the cluster to clean up.
   depends_on = [
-    module.eks
+    module.target_cluster_kind
   ]
 }
 
-data "google_project" "fleet_project" {
-  project_id = var.fleet_project
-}
 
-
-resource "google_container_attached_cluster" "primary" {
-  name             = local.cluster_name
+resource "google_container_attached_cluster" "kind" {
+  name             = module.target_cluster_kind.cluster_name
   project          = var.fleet_project
   location         = var.attached_location
   description      = "attached cluster example"
-  distribution     = module.eks.distribution
+  distribution     = module.target_cluster_kind.distribution
   platform_version = var.attached_platform_version
   oidc_config {
-    issuer_url = module.eks.oidc_issuer_url
+    issuer_url = module.target_cluster_kind.oidc_issuer_url
+    jwks       = module.target_cluster_kind.oidc_jwks
   }
   fleet {
     project = "projects/${data.google_project.fleet_project.number}"
@@ -87,17 +88,17 @@ resource "google_container_attached_cluster" "primary" {
   }
 
   depends_on = [
-    module.attached_install_manifest
+    module.attached_install_manifest_kind
   ]
 }
 
 resource "google_gke_hub_membership_binding" "team_scope_cluster_bindings" {
   project               = var.fleet_project
-  membership_binding_id = google_container_attached_cluster.primary.name
+  membership_binding_id = google_container_attached_cluster.kind.name
   scope                 = google_gke_hub_scope.acme_scope.name
- # the attaached name we provided is used as the membership name
-  membership_id         = local.cluster_name  
+  # the attaached name we provided is used as the membership name
+  membership_id = google_container_attached_cluster.kind.name
   # even though the attached resource is in a region, the membership is
   # in the global region for all attached resources at this time.
-  location              = "global" 
+  location = "global"
 }
