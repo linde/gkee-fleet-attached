@@ -6,7 +6,7 @@ spec:
   mode: dynamic
   selector:
     matchLabels: 
-      fleet.gke.io/fleet-scope: acme-anvils
+      fleet.gke.io/fleet-scope: acme
 ---
 apiVersion: apps/v1
 kind: Deployment
