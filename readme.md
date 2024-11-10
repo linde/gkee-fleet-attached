@@ -35,6 +35,11 @@ TFSTATE_CLUSTER=$(echo google_container_attached_cluster.primary.name | terrafor
 
 gcloud container fleet memberships get-credentials --project=${TFSTATE_PROJECT} ${TFSTATE_CLUSTER}
 
-
 ```
+
+Also, we created GKE Enterprise teams for our "Acme" line of business. For this, we created two Fleet namespaces which will be sync'ed to all bound clusters (across clouds, onprem, and GKE). Also, we managed ACLs: our cluster admins have admin permissions to manage the team resources (ie create namespaces and users). Additionally, we enabled view permissions for one of the users.
+
+* Check out the [acme team](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/details?pageState=(%22timeRangeFilter%22:(%22groupValue%22:%22PT1H%22,%22customValue%22:null))&project=stevenlinde-eks-2024-11-01)
+* See the [Fleet Namespaces](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/namespaces?pageState=(%22timeRangeFilter%22:(%22groupValue%22:%22PT1H%22,%22customValue%22:null))&project=stevenlinde-eks-2024-11-01)
+* Check out the specific [anvils app namespaces](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/namespaces/acme-anvils/details?project=stevenlinde-eks-2024-11-01) and [logs](https://pantheon.corp.google.com/kubernetes/teams/details/global/acme/namespaces/acme-anvils/logs?project=stevenlinde-eks-2024-11-01)
 
