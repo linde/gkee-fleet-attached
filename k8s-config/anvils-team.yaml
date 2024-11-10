@@ -1,0 +1,36 @@
+kind: NamespaceSelector
+apiVersion: configmanagement.gke.io/v1
+metadata:
+  name: acme-anvils-scope-selector
+spec:
+  mode: dynamic
+  selector:
+    matchLabels: 
+      fleet.gke.io/fleet-scope: acme-anvils
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acme-anvil-workload
+  annotations:
+    configmanagement.gke.io/namespace-selector: acme-anvils-scope-selector
+  labels:
+    app: counter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter
+  template:
+    metadata:
+      labels:
+        app: counter
+    spec:
+      containers:
+      - name: counter
+        image: ubuntu:14.04
+        args: [
+          "bash", "-c", "for ((i = 0; ; i++)); do echo \"count $i: $(date)\"; sleep 1; done"
+        ]
+---
+
