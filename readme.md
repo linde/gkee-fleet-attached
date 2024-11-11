@@ -16,7 +16,7 @@ terraform apply
 
 ```
 
-## Exploring
+## Exploring via `kubectl`
 
 You can explore what was created via the GCP Cloud Console as follows:
 
@@ -31,11 +31,16 @@ Additionally, you can use SSO and interact directly via k8s, even without line o
 # explore via GCP
 
 TFSTATE_PROJECT=$(echo var.fleet_project | terraform console | sed 's/"//g')
-TFSTATE_CLUSTER=$(echo module.target_cluster_eks.cluster_name | terraform console | sed 's/"//g')
+TFSTATE_EKS_CLUSTER=$(echo module.target_cluster_eks.cluster_name | terraform console | sed 's/"//g')
+gcloud container fleet memberships get-credentials --project=${TFSTATE_PROJECT} ${TFSTATE_EKS_CLUSTER}
 
-gcloud container fleet memberships get-credentials --project=${TFSTATE_PROJECT} ${TFSTATE_CLUSTER}
+# if you do kind
+TFSTATE_KIND_CLUSTER=$(echo module.target_cluster_kind.cluster_name | terraform console | sed 's/"//g')
+gcloud container fleet memberships get-credentials --project=${TFSTATE_PROJECT} ${TFSTATE_KIND_CLUSTER}
 
 ```
+
+## Exploring GKE Enterprise Teams
 
 Also, we created GKE Enterprise teams for our "Acme" line of business. For this, we created two Fleet namespaces which will be sync'ed to all bound clusters (across clouds, onprem, and GKE). Also, we managed ACLs: our cluster admins have admin permissions to manage the team resources (ie create namespaces and users). Additionally, we enabled view permissions for one of the users.
 
