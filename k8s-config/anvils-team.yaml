@@ -32,5 +32,13 @@ spec:
         args: [
           "bash", "-c", "for ((i = 0; ; i++)); do echo \"count $i: $(date)\"; sleep 1; done"
         ]
+        resources:
+          limits:
+            memory: "50Mi"
+            cpu: "10m"
+            ephemeral-storage: "500M"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+            ephemeral-storage: "500M"
 ---
-
