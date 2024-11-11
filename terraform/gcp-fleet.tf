@@ -57,6 +57,34 @@ resource "google_gke_hub_feature" "fleet_config_defaults" {
       }
     }
   }
+  depends_on = [
+    google_project_service.services["gkee.googleapis.com"],
+    google_project_service.services["gkehub.googleapis.com"],
+    google_project_service.services["anthosconfigmanagement.googleapis.com"],
+  ]
+}
+
+// the fleet observeability feature for log management
+resource "google_gke_hub_feature" "fleetobservability" {
+  name     = "fleetobservability"
+  project  = var.fleet_project
+  location = "global"
+  spec {
+    fleetobservability {
+      logging_config {
+        default_config {
+          mode = "COPY"
+        }
+        fleet_scope_logs_config {
+          mode = "COPY"
+        }
+      }
+    }
+  }
+  depends_on = [
+    google_project_service.services["gkee.googleapis.com"],
+    google_project_service.services["gkehub.googleapis.com"],
+  ]
 }
 
 // Team One stuff
@@ -94,5 +122,4 @@ module "acme_scope_viewer_permissions" {
   users            = var.acme_scope_viewers
   role             = "VIEW"
 }
-
 
