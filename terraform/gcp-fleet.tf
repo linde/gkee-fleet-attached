@@ -32,6 +32,7 @@ resource "google_project_service" "services" {
     "anthosconfigmanagement.googleapis.com",
     "gkemulticloud.googleapis.com",
     "logging.googleapis.com",
+    "kubernetesmetadata.googleapis.com",
   ])
   service            = each.value
   disable_on_destroy = var.disable_services_on_destroy
@@ -119,7 +120,7 @@ module "acme_scope_viewer_permissions" {
 
   fleet_project_id = var.fleet_project
   scope_id         = google_gke_hub_scope.acme_scope.scope_id
-  users            = var.acme_scope_viewers
+  groups           = var.acme_scope_viewers
   role             = "VIEW"
 }
 

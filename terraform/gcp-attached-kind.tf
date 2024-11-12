@@ -20,6 +20,8 @@
 module "target_cluster_kind" {
   source       = "./kind"
   cluster_name = "${local.cluster_name}-kind"
+
+  depends_on = [ google_project_service.services ]
 }
 
 # // use this with a kind target_cluster

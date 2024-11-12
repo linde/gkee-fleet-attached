@@ -19,6 +19,7 @@
 module "target_cluster_eks" {
   source       = "./eks"
   cluster_name = local.cluster_name
+  depends_on = [ google_project_service.services ]
 }
 
 // use this with an eks target_cluster

@@ -29,7 +29,7 @@ variable "acme_scope_namespace_names" {
 }
 
 variable "acme_scope_viewers" {
-  default = ["juliangut@google.com"]
+  default = ["attached-demo-acme-admin@google.com"]
 }
 
 
@@ -46,7 +46,7 @@ variable "attached_location" {
 variable "attached_platform_version" {
   description = "Attached cluster platform resource, needs to correspond to var.aws_eks_k8s_version"
   type        = string
-  default     = "1.29.0-gke.3"
+  default     = "1.30.0-gke.3"
 }
 
 variable "cluster_admin_groups" {

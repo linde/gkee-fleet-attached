@@ -21,6 +21,6 @@ variable "cluster_name" {
 
 variable "kind_node_image" {
   description = "The image used for the kind cluster"
-  default     = "kindest/node:v1.29.10"
+  default     = "kindest/node:v1.30.6"
 }
 
